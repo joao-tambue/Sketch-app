@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -83,6 +83,12 @@ export default function Index() {
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
     const scale = useSharedValue(1);
+
+    // Reset translate values when element position changes from database
+    React.useEffect(() => {
+      translateX.value = 0;
+      translateY.value = 0;
+    }, [element.x, element.y, translateX, translateY]);
 
     const renderElement = () => {
     switch (element.type) {
@@ -176,9 +182,22 @@ export default function Index() {
     }
   };
 
-  const panGesture = Gesture.Pan().onChange((event) => {
-    console.log("it ended!");
+  const panGesture = Gesture.Pan()
+  .onStart(() => {
+    scale.value = withSpring(1.1);
+    runOnJS(onSelect)(element.id)
   })
+  .onUpdate((event) => {
+      translateX.value = event.translationX;
+      translateY.value = event.translationY;
+    })
+    .onEnd((event) => {
+      scale.value = withSpring(1);
+      const finalX = element.x + event.translationX;
+      const finalY = element.y + event.translationY;
+      runOnJS(onMove)(element.id, finalX, finalY);
+    });
+    
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -231,6 +250,26 @@ export default function Index() {
   setSelectedElementId(elementId)
 }
 
+  const moveElement = (elementId: string, x: number, y: number) => {
+    db.transact(db.tx.elements[elementId].update({ x, y }));
+  };
+
+  const selectElement = (id: string) => {
+    setSelectedElementId(id);
+  };
+
+  const clearCanvas = () => {
+    if (elements.length > 0) {
+      const elementIds = elements.map((el: any) => el.id);
+      db.transact(
+        elementIds.map((elementId: string) =>
+          db.tx.elements[elementId].delete()
+        )
+      );
+    }
+    setSelectedElementId(null);
+  };
+
   const canvasTapGesture = Gesture.Tap().onEnd((event) => {
     if (event.y < screenHeight - 120) {
       // add element
@@ -254,8 +293,8 @@ export default function Index() {
             <MovableElement 
               key={element.id}
               element={element as SketchElement}
-              onMove={() => {}}
-              onSelect={() => {}}
+              onMove={moveElement}
+              onSelect={selectElement}
               isSelected={element.id === selectedElementId}
              />
           ))}
@@ -293,7 +332,7 @@ export default function Index() {
         </View>
         <View style={styles.bottomRow}>
             <TouchableOpacity style={styles.clearButton}
-            //  onPress={clearCanvas}
+              onPress={clearCanvas}
              >
               <Text style={styles.clearButtonText}>✕</Text>
             </TouchableOpacity>
