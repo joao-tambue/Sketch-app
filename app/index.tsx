@@ -1,5 +1,7 @@
 import db from "@/db";
+import { MaterialIcons } from "@expo/vector-icons";
 import { id } from "@instantdb/react-native";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -21,6 +23,8 @@ interface SketchElement {
   color: string;
   width?: number;
   height?: number;
+  text?: string;
+  fontSize?: number;
 }
 
 const COLORS = [
@@ -54,6 +58,7 @@ export default function Index() {
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null
   );
+  const router = useRouter();
 
   const getToolIcon = (toolType: string) => {
     switch (toolType) {
@@ -278,6 +283,21 @@ export default function Index() {
   } )
 
   return (
+    <>
+    <TouchableOpacity
+      style={{
+        position: "absolute",
+        top: 40,
+        right: 20,
+        backgroundColor: "#6366F1",
+        padding: 12,
+        borderRadius: 30,
+        zIndex: 50
+      }}
+      onPress={() => router.push("/chat")}
+    >
+      <MaterialIcons name="chat" size={24} color="white" />
+    </TouchableOpacity>
     <View
       style={{
         flex: 1,
@@ -355,6 +375,7 @@ export default function Index() {
           </View>
       </View>
     </View>
+    </>
   );
 }
 
