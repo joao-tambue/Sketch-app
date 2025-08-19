@@ -1,4 +1,3 @@
-// components/ChatHeader.tsx
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -32,7 +31,6 @@ export default function ChatHeader({ onClearChat }: Props) {
 
   return (
     <View style={styles.header}>
-      {/* Botão voltar */}
       <TouchableOpacity
         style={styles.iconButton}
         onPress={() => router.push("/")}
@@ -40,10 +38,8 @@ export default function ChatHeader({ onClearChat }: Props) {
         <MaterialIcons name="home" size={26} color="#f5f5f5" />
       </TouchableOpacity>
 
-      {/* Título */}
-      <Text style={styles.title}>Chat</Text>
+      <Text style={styles.title}>VIP-Chat</Text>
 
-      {/* Menu lateral */}
       <View style={styles.menuWrapper}>
         <TouchableOpacity
           style={styles.iconButton}
@@ -112,7 +108,7 @@ const styles = StyleSheet.create({
   },
   menuWrapper: {
     position: "relative",
-    zIndex: 20, // acima do header
+    zIndex: 20,
   },
   dropdown: {
     position: "absolute",

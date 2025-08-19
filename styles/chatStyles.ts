@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  // ---- Login inicial ----
+  // Login inicial
   container: {
     flex: 1,
     justifyContent: "center",
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  // ---- Chat ----
+  // Chat
   chatContainer: {
     flex: 1,
     padding: 10,
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 
-  // ---- Input ----
+  // Inputs
   inputRow: {
     flexDirection: "row",
     alignItems: "center",

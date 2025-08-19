@@ -1,5 +1,6 @@
 import db from "@/db";
 import { id } from "@instantdb/react-native";
+import { Audio } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { ActionSheetIOS, Alert, Platform } from "react-native";
@@ -9,6 +10,7 @@ export function useChat() {
   const [joined, setJoined] = useState(false);
   const [message, setMessage] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
 
   const { data } = db.useQuery({ messages: {}, presence: {} });
 
@@ -106,6 +108,48 @@ export function useChat() {
     );
   };
 
+  const startRecording = async () => {
+  try {
+    const permission = await Audio.requestPermissionsAsync();
+    if (permission.status !== "granted") {
+      alert("Permissão de microfone negada!");
+      return;
+    }
+
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: true,
+      playsInSilentModeIOS: true,
+    });
+
+    const { recording } = await Audio.Recording.createAsync(
+      Audio.RecordingOptionsPresets.HIGH_QUALITY
+    );
+    setRecording(recording);
+  } catch (err) {
+    console.error("Erro ao iniciar gravação:", err);
+  }
+};
+
+const stopRecording = async () => {
+  if (!recording) return;
+
+  setRecording(null);
+  await recording.stopAndUnloadAsync();
+  const uri = recording.getURI();
+
+  if (uri) {
+    const msgId = id();
+    db.transact(
+      db.tx.messages[msgId].update({
+        user: username,
+        type: "audio",
+        mediaUri: uri,
+        createdAt: Date.now(),
+      })
+    );
+  }
+};
+
   return {
     username,
     setUsername,
@@ -124,5 +168,8 @@ export function useChat() {
     handleLongPress,
     joinChat,
     clearChat,
+    recording,
+    startRecording,
+    stopRecording,
   };
 }

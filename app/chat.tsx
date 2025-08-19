@@ -1,8 +1,10 @@
 import ChatHeader from "@/components/ChatHeader";
 import InputBar from "@/components/InputBar";
 import MessageBubble from "@/components/MessageBubble";
+import db from "@/db";
 import { useChat } from "@/hooks/useChat";
 import styles from "@/styles/chatStyles";
+import { id } from "@instantdb/react-native";
 import { FlatList, Keyboard, KeyboardAvoidingView, Platform, Text, TouchableWithoutFeedback, View } from "react-native";
 
 export default function ChatScreen() {
@@ -21,6 +23,31 @@ export default function ChatScreen() {
     sendMessage,
     sendMedia,
   } = useChat();
+
+  const handleSendMedia = (mediaType: "image" | "video" | "audio", uri?: string) => {
+    if (mediaType === "audio" && uri) {
+      // Envia áudio usando lógica semelhante ao stopRecording
+      const msgId = id();
+      db.transact(
+        db.tx.messages[msgId].update({
+          user: username,
+          type: "audio",
+          mediaUri: uri,
+          createdAt: Date.now(),
+        })
+      );
+      db.transact(
+        db.tx.messages[msgId].update({
+          user: username,
+          type: "audio",
+          mediaUri: uri,
+          createdAt: Date.now(),
+        })
+      );
+    } else {
+      sendMedia(mediaType as "image" | "video");
+    }
+  };
 
   if (!joined) {
     return (
@@ -62,7 +89,7 @@ export default function ChatScreen() {
             setMessage={setMessage}
             sendMessage={sendMessage}
             editingMessageId={editingMessageId}
-            sendMedia={sendMedia}
+            sendMedia={handleSendMedia}
           />
         </View>
       </TouchableWithoutFeedback>

@@ -1,5 +1,7 @@
 import styles from "@/styles/chatStyles";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
+import { useRef, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type JoinInputProps = {
@@ -13,16 +15,18 @@ type ChatInputProps = {
   setMessage: (val: string) => void;
   sendMessage: () => void;
   editingMessageId: string | null;
-  sendMedia: (mediaType: "image" | "video") => void;
+  sendMedia: (mediaType: "image" | "video" | "audio", uri?: string) => void;
 };
 
-// Componente raiz "dummy"
 export default function InputBar() {
-  return null; 
+  return null;
 }
 
-// --- Subcomponentes --- //
-InputBar.JoinInput = function JoinInput({ username, setUsername, joinChat }: JoinInputProps) {
+InputBar.JoinInput = function JoinInput({
+  username,
+  setUsername,
+  joinChat,
+}: JoinInputProps) {
   return (
     <>
       <TextInput
@@ -45,9 +49,60 @@ InputBar.ChatInput = function ChatInput({
   editingMessageId,
   sendMedia,
 }: ChatInputProps) {
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const recordingRef = useRef<Audio.Recording | null>(null);
+
+  // Iniciar gravação
+  const startRecording = async () => {
+    if (recordingRef.current) {
+    await recordingRef.current.stopAndUnloadAsync();
+    recordingRef.current = null;
+    setRecording(null);
+  }
+    try {
+      const permission = await Audio.requestPermissionsAsync();
+      if (!permission.granted) {
+        alert("Permissão para acessar o microfone é necessária!");
+        return;
+      }
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+
+      recordingRef.current = recording;
+      setRecording(recording);
+    } catch (err) {
+      console.error("Erro ao iniciar gravação:", err);
+    }
+  };
+
+  // Parar gravação e enviar
+  const stopRecording = async () => {
+    try {
+      if (!recordingRef.current) return;
+
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
+
+      if (uri) {
+        sendMedia("audio", uri); // envia o arquivo de áudio
+      }
+
+      setRecording(null);
+      recordingRef.current = null;
+    } catch (err) {
+      console.error("Erro ao parar gravação:", err);
+    }
+  };
+
   return (
     <View style={styles.inputRow}>
-      {/* Botões de mídia */}
       <TouchableOpacity style={styles.mediaButton} onPress={() => sendMedia("image")}>
         <MaterialIcons name="photo" size={24} color="#6366F1" />
       </TouchableOpacity>
@@ -55,7 +110,6 @@ InputBar.ChatInput = function ChatInput({
         <MaterialIcons name="videocam" size={24} color="#6366F1" />
       </TouchableOpacity>
 
-      {/* Input de mensagem */}
       <TextInput
         style={styles.inputMessage}
         value={message}
@@ -63,8 +117,19 @@ InputBar.ChatInput = function ChatInput({
         placeholder="Digite uma mensagem..."
       />
 
-      {/* Botão enviar/salvar */}
-      <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+      <TouchableOpacity
+        style={styles.mediaButton}
+        onPressIn={startRecording}
+        onPressOut={stopRecording}
+      >
+        <MaterialIcons
+          name={recording ? "stop" : "mic"}
+          size={24}
+          color={recording ? "red" : "#6366F1"}
+        />
+      </TouchableOpacity>
+
+       <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
         <MaterialIcons
           name={editingMessageId ? "save" : "send"}
           size={22}
