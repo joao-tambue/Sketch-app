@@ -1,3 +1,4 @@
+import { useToolbar } from "@/hooks/useToolbar";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -22,10 +23,11 @@ interface MovableElementProps {
   isSelected: boolean;
 }
 
-export function MovableElement({ element, onMove, onSelect, isSelected }: MovableElementProps ) {
+export function MovableElement({ element, onMove, onSelect, isSelected }: MovableElementProps & { selectedTool: string } ) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
+  const { selectedTool } = useToolbar();
 
   useEffect(() => {
     translateX.value = 0;
@@ -76,7 +78,7 @@ export function MovableElement({ element, onMove, onSelect, isSelected }: Movabl
   };
 
   return (
-    <GestureDetector gesture={panGesture}>
+    <GestureDetector gesture={selectedTool === "pencil" ? Gesture.Tap() : panGesture}>
       <Animated.View style={[animatedStyle, styles.elementContainer, isSelected && styles.selectedElement]}>
         {renderElement()}
       </Animated.View>

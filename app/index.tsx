@@ -116,7 +116,8 @@ export default function Index() {
             setCanvasOffset({ x, y });
           }}
         >
-          <Canvas style={StyleSheet.absoluteFill}>
+
+          <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
             {strokes.map((stroke, i) => (
               <Path
                 key={i}
@@ -137,8 +138,10 @@ export default function Index() {
               onMove={moveElement}
               onSelect={selectElement}
               isSelected={element.id === selectedElementId}
+              selectedTool={selectedTool} // passa a prop nova
             />
           ))}
+
         </View>
       </GestureDetector>
 

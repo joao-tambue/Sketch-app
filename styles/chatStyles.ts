@@ -4,33 +4,46 @@ const styles = StyleSheet.create({
   // Login inicial
   container: {
     flex: 1,
+    backgroundColor: "#fff", // fundo branco
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    paddingHorizontal: 24,
+  },
+  animation: {
+    width: 180,
+    height: 180,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 18,
-    marginBottom: 20,
-    color: "#111827",
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#111",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#555",
+    marginBottom: 30,
+    textAlign: "center",
   },
   input: {
+    width: "100%",
+    maxWidth: 360,
+    height: 50,
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    width: "80%",
+    borderColor: "#ddd",
+    borderRadius: 12,
+    paddingHorizontal: 15,
+    fontSize: 16,
     marginBottom: 20,
-    borderRadius: 8,
-    backgroundColor: "white",
-  },
-  button: {
-    backgroundColor: "#6366F1",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
+    backgroundColor: "#fafafa",
   },
   buttonText: {
-    color: "white",
-    fontWeight: "bold",
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 
   // Chat

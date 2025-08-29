@@ -5,6 +5,7 @@ import db from "@/db";
 import { useChat } from "@/hooks/useChat";
 import styles from "@/styles/chatStyles";
 import { id } from "@instantdb/react-native";
+import LottieView from "lottie-react-native";
 import { FlatList, Keyboard, KeyboardAvoidingView, Platform, Text, TouchableWithoutFeedback, View } from "react-native";
 
 export default function ChatScreen() {
@@ -52,9 +53,23 @@ export default function ChatScreen() {
   if (!joined) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Digite seu nome para entrar no chat:</Text>
-        <InputBar.JoinInput username={username} setUsername={setUsername} joinChat={joinChat} />
-      </View>
+        <LottieView
+          source={require("../assets/Communication.json")} // coloque o JSON da animação aqui
+          autoPlay
+          loop
+          style={styles.animation}
+        />
+        <Text style={styles.title}>🚀 Bem-vindo ao Chat</Text>
+        <Text style={styles.subtitle}>
+          Digite seu nome para entrar no chat:
+        </Text>
+
+        <InputBar.JoinInput
+          username={username}
+          setUsername={setUsername}
+          joinChat={joinChat}
+        />
+    </View>
     );
   }
 

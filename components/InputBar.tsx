@@ -35,7 +35,18 @@ InputBar.JoinInput = function JoinInput({
         onChangeText={setUsername}
         placeholder="Seu nome"
       />
-      <TouchableOpacity style={styles.button} onPress={joinChat}>
+      <TouchableOpacity style={ { backgroundColor: "#6366F1", // cor pedida
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 12,
+    width: "100%",
+    maxWidth: 360,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
+    elevation: 3, } } onPress={joinChat}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
     </>
