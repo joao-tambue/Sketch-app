@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Esboço Local",
-    "slug": "Esboço Local",
+    "slug": "esboco-local",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +17,8 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.joaotambue.esbocolocal"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f2fab340-cf9b-40fe-81d3-5b8da3a910d8"
+      }
     }
   }
 }

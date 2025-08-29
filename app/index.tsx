@@ -14,7 +14,14 @@ import {
   View,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Svg, { Polyline } from "react-native-svg";
+
+// --- Skia ---
+import {
+  Canvas,
+  Path,
+  Skia,
+  SkPath,
+} from "@shopify/react-native-skia";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -32,19 +39,22 @@ interface SketchElement {
 
 interface Stroke {
   color: string;
-  points: { x: number; y: number }[];
+  path: SkPath;
 }
 
 export default function Index() {
   const router = useRouter();
   const { elements, selectedElementId, addElement, moveElement, selectElement, clearCanvas } = useElements();
   const { selectedTool, setSelectedTool, getToolIcon } = useToolbar();
-  const canvasTapGesture = useCanvasGesture((x, y) => addElement(selectedTool, selectedColor, x, y), screenHeight);
+  const canvasTapGesture = useCanvasGesture(
+    (x, y) => addElement(selectedTool, selectedColor, x, y),
+    screenHeight
+  );
 
   // --- Novos estados para desenho livre ---
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const strokesRef = useRef<Stroke[]>([]);
-  const currentStrokeRef = useRef<Stroke | null>(null);
+  const currentPathRef = useRef<Stroke | null>(null);
   const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
   const [selectedColor, setSelectedColor] = useState("black");
 
@@ -53,22 +63,25 @@ export default function Index() {
     .onStart((e) => {
       const x = e.x - canvasOffset.x;
       const y = e.y - canvasOffset.y;
-      const newStroke: Stroke = { color: selectedColor, points: [{ x, y }] };
-      currentStrokeRef.current = newStroke;
+      const path = Skia.Path.Make();
+      path.moveTo(x, y);
+      const stroke: Stroke = { color: selectedColor, path };
+      currentPathRef.current = stroke;
+      setStrokes((prev) => [...prev, stroke]);
     })
     .onUpdate((e) => {
-      if (currentStrokeRef.current) {
+      if (currentPathRef.current) {
         const x = e.x - canvasOffset.x;
         const y = e.y - canvasOffset.y;
-        currentStrokeRef.current.points.push({ x, y });
-        setStrokes([...strokesRef.current, currentStrokeRef.current]);
+        currentPathRef.current.path.lineTo(x, y);
+        // Força o re-render
+        setStrokes((prev) => [...prev]);
       }
     })
     .onEnd(() => {
-      if (currentStrokeRef.current) {
-        strokesRef.current = [...strokesRef.current, currentStrokeRef.current];
-        setStrokes(strokesRef.current);
-        currentStrokeRef.current = null;
+      if (currentPathRef.current) {
+        strokesRef.current = [...strokesRef.current, currentPathRef.current];
+        currentPathRef.current = null;
       }
     });
 
@@ -82,36 +95,42 @@ export default function Index() {
           backgroundColor: "#6366F1",
           padding: 12,
           borderRadius: 30,
-          zIndex: 50
+          zIndex: 50,
         }}
         onPress={() => router.push("/chat")}
       >
         <MaterialIcons name="chat" size={24} color="white" />
       </TouchableOpacity>
-      <GestureDetector gesture={Gesture.Exclusive(canvasTapGesture, pencilGesture)}>
-        <View style={{ flex: 1, backgroundColor: "white", position: "relative" }}
-        onLayout={(event) => {
-          const { x, y } = event.nativeEvent.layout;
-          setCanvasOffset({ x, y });
-        }}
-        >
-          
-          {/* Renderizando desenhos */}
-          <Svg style={StyleSheet.absoluteFill}>
-          {strokes.map((stroke, i) => (
-            <Polyline
-              key={i}
-              points={stroke.points.map(p => `${p.x},${p.y}`).join(" ")}
-              stroke={stroke.color}
-              strokeWidth={4}
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          ))}
-        </Svg>
 
-          {/* Renderizando elementos */}
+      <GestureDetector
+        gesture={
+          selectedTool === "pencil"
+            ? pencilGesture
+            : canvasTapGesture
+        }
+      >
+        <View
+          style={{ flex: 1, backgroundColor: "white", position: "relative" }}
+          onLayout={(event) => {
+            const { x, y } = event.nativeEvent.layout;
+            setCanvasOffset({ x, y });
+          }}
+        >
+
+          <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
+            {strokes.map((stroke, i) => (
+              <Path
+                key={i}
+                path={stroke.path}
+                color={stroke.color}
+                style="stroke"
+                strokeWidth={4}
+                strokeJoin="round"
+                strokeCap="round"
+              />
+            ))}
+          </Canvas>
+
           {elements.map((element) => (
             <MovableElement
               key={element.id}
@@ -119,32 +138,38 @@ export default function Index() {
               onMove={moveElement}
               onSelect={selectElement}
               isSelected={element.id === selectedElementId}
+              selectedTool={selectedTool} // passa a prop nova
             />
           ))}
+
         </View>
       </GestureDetector>
 
-      {/* Toolbar */}
       <View style={styles.toolbar}>
         <View style={styles.topRow}>
           <View style={styles.toolButtons}>
-            {(["circle","rectangle","triangle","diamond","star","hexagon","pencil"] as const).map((tool) => (
-              <TouchableOpacity
-                key={tool}
-                style={[
-                  styles.toolButton,
-                  selectedTool === tool && styles.selectedTool,
-                  selectedTool === tool && { backgroundColor: selectedColor }
-                ]}
-                onPress={() => setSelectedTool(tool)}
-              >
-                <Text style={[styles.toolButtonText,
-                  selectedTool === tool && styles.selectedToolText,
-                ]}>
-                  {getToolIcon(tool)}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {(["circle", "rectangle", "triangle", "diamond", "star", "hexagon", "pencil"] as const).map(
+              (tool) => (
+                <TouchableOpacity
+                  key={tool}
+                  style={[
+                    styles.toolButton,
+                    selectedTool === tool && styles.selectedTool,
+                    selectedTool === tool && { backgroundColor: selectedColor },
+                  ]}
+                  onPress={() => setSelectedTool(tool)}
+                >
+                  <Text
+                    style={[
+                      styles.toolButtonText,
+                      selectedTool === tool && styles.selectedToolText,
+                    ]}
+                  >
+                    {getToolIcon(tool)}
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
           </View>
         </View>
 
@@ -173,8 +198,6 @@ export default function Index() {
     </>
   );
 }
-
-// ... Mantém o styles exatamente como você já tinha
 
 
 const styles = StyleSheet.create({
