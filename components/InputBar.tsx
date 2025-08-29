@@ -35,7 +35,7 @@ InputBar.JoinInput = function JoinInput({
         onChangeText={setUsername}
         placeholder="Seu nome"
       />
-      <TouchableOpacity style={ { backgroundColor: "#6366F1", // cor pedida
+      <TouchableOpacity style={ { backgroundColor: "#6366F1",
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 12,
