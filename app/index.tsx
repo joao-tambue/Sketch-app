@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
-// --- Skia ---
+// Skia
 import {
   Canvas,
   Path,
@@ -51,12 +51,12 @@ export default function Index() {
     screenHeight
   );
 
-  // --- Novos estados para desenho livre ---
+  // Estados para desenho livre
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const strokesRef = useRef<Stroke[]>([]);
   const currentPathRef = useRef<Stroke | null>(null);
   const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
-  const [selectedColor, setSelectedColor] = useState("black");
+  const [selectedColor, setSelectedColor] = useState("#6366F1");
 
   // Gesture para desenho com lápis
   const pencilGesture = Gesture.Pan()
@@ -138,7 +138,7 @@ export default function Index() {
               onMove={moveElement}
               onSelect={selectElement}
               isSelected={element.id === selectedElementId}
-              selectedTool={selectedTool} // passa a prop nova
+              selectedTool={selectedTool}
             />
           ))}
 
@@ -148,7 +148,7 @@ export default function Index() {
       <View style={styles.toolbar}>
         <View style={styles.topRow}>
           <View style={styles.toolButtons}>
-            {(["circle", "rectangle", "triangle", "diamond", "star", "hexagon", "pencil"] as const).map(
+            {(["circle", "rectangle", "triangle", "diamond", "star", "hexagon"] as const).map(
               (tool) => (
                 <TouchableOpacity
                   key={tool}
