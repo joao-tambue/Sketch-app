@@ -34,18 +34,23 @@ export default function ChatHeader({ onClearChat }: Props) {
       <TouchableOpacity
         style={styles.iconButton}
         onPress={() => router.push("/")}
+        activeOpacity={0.6}
       >
-        <MaterialIcons name="home" size={26} color="#f5f5f5" />
+        <MaterialIcons name="arrow-back" size={24} color="#fff" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>VIP-Chat</Text>
+      <View style={styles.center}>
+        <Text style={styles.title}>Comunidade</Text>
+        <Text style={styles.subtitle}>12 membros online</Text>
+      </View>
 
       <View style={styles.menuWrapper}>
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() => setMenuVisible((v) => !v)}
+          activeOpacity={0.6}
         >
-          <MaterialIcons name="more-vert" size={26} color="#f5f5f5" />
+          <MaterialIcons name="more-vert" size={24} color="#fff" />
         </TouchableOpacity>
 
         {menuVisible && (
@@ -61,9 +66,11 @@ export default function ChatHeader({ onClearChat }: Props) {
                 handleClearChat();
               }}
             >
-              <MaterialIcons name="delete" size={20} color="#f87171" />
+              <MaterialIcons name="delete" size={20} color="#EF4444" />
               <Text style={styles.deleteText}>Limpar conversa</Text>
             </TouchableOpacity>
+
+            <View style={styles.divider} />
 
             <TouchableOpacity
               style={styles.dropdownItem}
@@ -72,7 +79,7 @@ export default function ChatHeader({ onClearChat }: Props) {
                 router.push("/");
               }}
             >
-              <MaterialIcons name="logout" size={20} color="#f5f5f5" />
+              <MaterialIcons name="logout" size={20} color="#111" />
               <Text style={styles.itemText}>Sair da sala</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -87,9 +94,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 24,
     backgroundColor: "#6366F1",
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -97,14 +106,23 @@ const styles = StyleSheet.create({
     elevation: 6,
     zIndex: 10,
   },
+  center: {
+    flex: 1,
+    alignItems: "center",
+  },
   title: {
     color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
-    letterSpacing: 0.5,
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  subtitle: {
+    color: "#E0E7FF",
+    fontSize: 12,
+    marginTop: 2,
   },
   iconButton: {
     padding: 6,
+    borderRadius: 50,
   },
   menuWrapper: {
     position: "relative",
@@ -113,9 +131,9 @@ const styles = StyleSheet.create({
   dropdown: {
     position: "absolute",
     right: 0,
-    top: 50,
-    width: 180,
-    backgroundColor: "#6366F1",
+    top: 46,
+    width: 190,
+    backgroundColor: "#fff",
     borderRadius: 10,
     paddingVertical: 6,
     shadowColor: "#000",
@@ -128,17 +146,22 @@ const styles = StyleSheet.create({
   dropdownItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 14,
   },
   itemText: {
-    color: "#f5f5f5",
+    color: "#111",
     fontSize: 15,
     marginLeft: 8,
   },
   deleteText: {
-    color: "#f87171",
+    color: "#EF4444",
     fontSize: 15,
     marginLeft: 8,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#E5E7EB",
+    marginHorizontal: 10,
   },
 });

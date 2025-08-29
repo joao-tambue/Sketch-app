@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
   // Login inicial
   container: {
     flex: 1,
-    backgroundColor: "#fff", // fundo branco
+    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 24,
@@ -49,46 +49,52 @@ const styles = StyleSheet.create({
   // Chat
   chatContainer: {
     flex: 1,
-    padding: 10,
+    padding: 12,
     backgroundColor: "#F9FAFB",
   },
-
   messageBubble: {
     maxWidth: "75%",
-    padding: 10,
+    padding: 12,
     marginVertical: 6,
-    borderRadius: 12,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   myMessage: {
     alignSelf: "flex-end",
     backgroundColor: "#6366F1",
+    borderBottomRightRadius: 4, // cantinho diferente
   },
   otherMessage: {
     alignSelf: "flex-start",
     backgroundColor: "#E5E7EB",
+    borderBottomLeftRadius: 4,
   },
   messageUser: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginBottom: 4,
     color: "#374151",
   },
   messageText: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#111827",
+    lineHeight: 20,
   },
   deletedText: {
-    fontSize: 16,
+    fontSize: 15,
     fontStyle: "italic",
     color: "#9CA3AF",
   },
-
   typing: {
     fontStyle: "italic",
     color: "#6B7280",
     marginBottom: 6,
     paddingHorizontal: 10,
   },
+
 
   // Inputs
   inputRow: {

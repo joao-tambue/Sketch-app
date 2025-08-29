@@ -27,7 +27,6 @@ export default function ChatScreen() {
 
   const handleSendMedia = (mediaType: "image" | "video" | "audio", uri?: string) => {
     if (mediaType === "audio" && uri) {
-      // Envia áudio usando lógica semelhante ao stopRecording
       const msgId = id();
       db.transact(
         db.tx.messages[msgId].update({
@@ -54,7 +53,7 @@ export default function ChatScreen() {
     return (
       <View style={styles.container}>
         <LottieView
-          source={require("../assets/Communication.json")} // coloque o JSON da animação aqui
+          source={require("../assets/Communication.json")}
           autoPlay
           loop
           style={styles.animation}
