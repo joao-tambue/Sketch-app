@@ -22,7 +22,7 @@ interface MovableElementProps {
   isSelected: boolean;
 }
 
-export function MovableElement({ element, onMove, onSelect, isSelected }: MovableElementProps) {
+export function MovableElement({ element, onMove, onSelect, isSelected }: MovableElementProps ) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
